@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fi-FI">
+    <head>
+        <title>Bank</title>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <script>
+            // Additional separate software modules and libraries you need
+
+            // constant variables you use
+
+            // global variables
+            let programloop = true;
+            let customerarray = [];
+            let accountarray = [];
+            //let creditarray=[];
+
+            // context between HTML elements and JavaScript variables
+
+            // classes, interfaces and objects
+            class Customer {
+                static idnumber = 0;
+                constructor(name) {
+                    this.bankaccountnumber = 0;
+                    this.creditnumber = 0;
+                    this.customernumber = ++Customer.idnumber;
+                    this.customername = name;
+                }
+            }
+
+            class BankAccount {
+                static idnumber = 0;
+                
+                constructor() {
+                    this.customernumber = 0;
+                    this.bankaccountnumber = ++BankAccount.idnumber;
+                    this.balance = 0;
+                    this.typeaccount="normal"
+                }
+                // change balance
+                // positive value increases
+                // negative value is withdrawal
+                changebalance(money) {
+                    if ( (money >= 0) || (Math.abs(money) <= this.balance)) {
+                            this.balance += money;
+                            return true;
+                    }
+                    return false;
+                }
+            }
+
+            class CreditAccount extends BankAccount {
+                constructor(limit) {
+                    super();
+                    this.typeaccount="credit"
+                    //let limit = Number(prompt("What is your credit limit?"));
+                    this.limit = limit;
+                }
+                changebalance(money) {
+                    if (Math.abs(money) <= (this.balance + this.limit)) {
+                        this.balance += money;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+
+            /*
+            let testcustomer1 = new Customer();
+            let testcustomer2 = new Customer();
+            console.log(testcustomer1.customernumber,testcustomer2.customernumber);            
+
+            let testbank1 = new BankAccount();
+            let testbank2 = new BankAccount();
+            console.log(testbank1.bankaccountnumber,testbank2.bankaccountnumber);            
+
+            let testcredit1 = new CreditAccount();
+            let testcredit2 = new CreditAccount();
+            console.log(testcredit1.bankaccountnumber,testcredit2.bankaccountnumber);            
+            */
+
+            // functions
+
+            // Event handlers
+
+            // Get data from database and/or generate data
+
+            // any code you need
+
+            // create a loop or bank
+            // leave the loop when user wants to do so
+            do {
+                // present a display of options
+                // ask from user what to do
+                // get a number
+                let selection = Number(prompt(
+                    "BANK MENU \n" +
+                    "1: Show Customers\n" +
+                    "2: Create a Customer\n" +
+                    "3: Carry out Transactions\n" +
+                    "4: Transfer money\n"
+                ))
+                // following declarations define dummy values used in switch
+                let dummyname = "";
+                let dummycustomer = null;
+                let dummyaccount = null;
+                let dummycredit=null;
+                let dummycustomernumber = 0;
+                let dummyreceiveraccount = null;
+
+                // carry out selected option
+                switch(selection) {
+                    case 1:
+                        for (let iter of customerarray) {
+                            console.log(iter);
+                        }
+                        break;
+                    case 2:
+                        dummyname = prompt("Give new Customer name");
+                        dummycustomer = new Customer(dummyname);
+                        accountchoice = Number(prompt(
+                            "Give me account type\n" +
+                            "1: Bank Account? \n" + 
+                            "2: Credit Account \n" ));
+                        dummyaccount = null;
+                        dummycredit=null;
+                        if (accountchoice === 1) {
+                            // bank account was chosen
+                            dummyaccount = new BankAccount();
+                        } else {
+                            let limit = Number(prompt("What is your credit limit?"));
+                            dummyaccount = new CreditAccount(limit);
+                        }
+                        // set bank account number to customer
+                        dummycustomer.bankaccountnumber = dummyaccount.bankaccountnumber; 
+                        // set customer number to bank account
+                        dummyaccount.customernumber = dummycustomer.customernumber;
+                        customerarray.push(dummycustomer);
+                        accountarray.push(dummyaccount);
+                        break;
+                    case 3:
+                        // customer says her customernumber
+                        dummycustomernumber = Number(prompt("Give me your customer number"));
+                        // All arrays have find method for finding elements
+                        // this returns all elements that have same customernumber
+                        // as inserted customernumber
+                        dummyaccount = accountarray.find(item => 
+                            item.customernumber === dummycustomernumber);
+                        console.log(dummyaccount);                        
+                        if (typeof dummyaccount !== undefined) {
+                            dummytransactionvalue = Number(prompt("Transaction value?"));
+                            dummyaccount.changebalance(dummytransactionvalue);
+                        }
+                        break;
+                    case 4:
+                        // customer says her customernumber
+                        dummysendernumber = Number(prompt("Give me sender customer number"));
+
+                        dummysenderaccount = accountarray.find(item => 
+                            item.customernumber === dummysendernumber);
+                        console.log(dummysenderaccount);                        
+
+                        dummyreceivernumber = Number(prompt("Give me receiver customer number"));
+
+                        dummyreceiveraccount = accountarray.find(item => 
+                            item.customernumber === dummyreceivernumber);
+                        console.log(dummyreceiveraccount);                        
+
+                        if (
+                            (typeof dummysenderaccount !== undefined) && 
+                            (typeof dummyreceiveraccount !== undefined)
+                        ) {
+                            dummytransactionvalue = Number(prompt("Transfer value?"));
+                            
+                            console.log("Type of your account: "+ dummysenderaccount.typeaccount);
+
+                                if (dummysenderaccount.changebalance(-dummytransactionvalue)) {
+                                    dummyreceiveraccount.changebalance(dummytransactionvalue);
+                                }
+                        }
+                        break;
+
+                        case 999:
+                        for (let iter of accountarray) {
+                            console.log(iter);
+                        }
+                        break;
+                    default:
+                        programloop = false;
+                        break;
+                }
+            } while(programloop);
+
+        </script>
+    </body>
+</html>
